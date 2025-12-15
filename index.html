@@ -10,7 +10,7 @@
     <!-- Navigation Header -->
     <header>
         <div class="header-container">
-            <a href="ProjectHub.html" class="logo">📚 ProjectHub</a>
+            <a href="index.html" class="logo">📚 ProjectHub</a>
             <nav>
                 <a href="browse.html">Browse</a>
                 <a href="dashboard.html">Dashboard</a>
@@ -135,10 +135,108 @@
                     <label>Live Demo URL (Optional)</label>
                     <input type="url" id="projDemo" placeholder="https://your-demo.com">
                 </div>
+                <div class="form-group">
+                    <label>Project Image</label>
+                    <input type="file" id="projImage" accept="image/*" onchange="handleImageUpload(event, 'upload')">
+                    <small style="color: #6b7280; display: block; margin-top: 0.5rem;">Max 5MB (JPEG, PNG, WebP, GIF)</small>
+                    <div id="uploadImagePreview" style="margin-top: 1rem; display: none;">
+                        <img id="uploadPreviewImg" style="max-width: 100%; max-height: 200px; border-radius: 8px;" alt="Preview">
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Publish Project</button>
             </form>
         </div>
     </div>
+
+    <!-- Edit Project Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Your Project</h2>
+                <button class="close-btn" onclick="closeModal('editModal')">&times;</button>
+            </div>
+            <form onsubmit="handleProjectEdit(event)">
+                <input type="hidden" id="editProjId">
+                <div class="form-group">
+                    <label>Project Title</label>
+                    <input type="text" id="editProjTitle" placeholder="What's your project called?" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editProjDesc" placeholder="Tell us about your project..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="editProjCategory" required>
+                        <option value="">Choose a category</option>
+                        <option value="Web">Web Development</option>
+                        <option value="Mobile">Mobile Apps</option>
+                        <option value="AI">AI & Machine Learning</option>
+                        <option value="Data">Data Science</option>
+                        <option value="Game">Game Development</option>
+                        <option value="Desktop">Desktop Applications</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Technologies Used</label>
+                    <input type="text" id="editProjTech" placeholder="e.g., React, Node.js, MongoDB">
+                </div>
+                <div class="form-group">
+                    <label>GitHub Repository URL</label>
+                    <input type="url" id="editProjGithub" placeholder="https://github.com/username/repo">
+                </div>
+                <div class="form-group">
+                    <label>Live Demo URL (Optional)</label>
+                    <input type="url" id="editProjDemo" placeholder="https://your-demo.com">
+                </div>
+                <div class="form-group">
+                    <label>Project Image</label>
+                    <input type="file" id="editProjImage" accept="image/*" onchange="handleImageUpload(event, 'edit')">
+                    <small style="color: #6b7280; display: block; margin-top: 0.5rem;">Max 5MB (JPEG, PNG, WebP, GIF)</small>
+                    <div id="editImagePreview" style="margin-top: 1rem;">
+                        <img id="editPreviewImg" style="max-width: 100%; max-height: 200px; border-radius: 8px;" alt="Preview">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <button class="close-btn" onclick="closeModal('deleteConfirmModal')">&times;</button>
+            </div>
+            <div style="padding: 1.5rem;">
+                <p style="margin-bottom: 1.5rem; color: #dc2626;">Are you sure you want to delete this project? This action cannot be undone.</p>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button onclick="closeModal('deleteConfirmModal')" class="btn btn-secondary">Cancel</button>
+                    <button onclick="confirmDeleteProject()" class="btn" style="background: #dc2626; color: white;">Delete Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Detail Modal -->
+    <div id="projectDetailModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 id="detailTitle">Project Details</h2>
+                <button class="close-btn" onclick="closeModal('projectDetailModal')">&times;</button>
+            </div>
+            <div style="padding: 1.5rem;">
+                <div id="detailImage" style="margin-bottom: 1.5rem;">
+                    <img id="detailImg" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px;" alt="Project">
+                </div>
+                <div id="detailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000;"></div>
 
     <!-- External JavaScript Files -->
     <script src="data.js"></script>

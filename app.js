@@ -159,7 +159,7 @@ function checkAuthAndUpdateNav() {
 function requireAuth() {
     if (!currentUser) {
         alert('⚠️ Please sign in to access this page');
-        window.location.href = 'ProjectHub.html';
+        window.location.href = 'index.html';
         return false;
     }
     return true;
@@ -239,7 +239,7 @@ function generateUniqueId() {
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
-        modal.style.display = 'flex';
+        modal.classList.add('active');
         modal.setAttribute('aria-hidden', 'false');
         
         // Focus first input if available
@@ -264,6 +264,13 @@ function closeModal(modalId) {
     // Remove active class for fade-out animation
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
+    
+    // Reset display after animation
+    setTimeout(() => {
+        if (!modal.classList.contains('active')) {
+            modal.style.display = 'none';
+        }
+    }, 300);
     
     console.log(`[closeModal] Successfully closed modal: ${modalId}`);
     
@@ -298,7 +305,21 @@ document.addEventListener('click', (e) => {
 
 function openLoginModal() { openModal('loginModal'); }
 function openRegisterModal() { openModal('registerModal'); }
-function openUploadModal() { openModal('uploadModal'); }
+function openUploadModal() { 
+    if (!currentUser) {
+        showToast('Please sign in to upload projects', 'error');
+        openLoginModal();
+        return;
+    }
+    
+    const uploadModal = document.getElementById('uploadModal');
+    if (!uploadModal) {
+        showToast('Upload feature is not available on this page', 'error');
+        return;
+    }
+    
+    openModal('uploadModal');
+}
 
 // ============= USER STORAGE MANAGEMENT =============
 function saveUserToStorage(userData) {
@@ -326,26 +347,8 @@ function updateUserInStorage(updatedUser) {
     }
 }
 
-// ============= MODAL MANAGEMENT =============
-function openLoginModal() {
-    document.getElementById('loginModal').classList.add('active');
-}
-
-function openRegisterModal() {
-    document.getElementById('registerModal').classList.add('active');
-}
-
-function openUploadModal() {
-    if (!currentUser) {
-        alert('Please sign in first to upload projects');
-        openLoginModal();
-        return;
-    }
-    document.getElementById('uploadModal').classList.add('active');
-}
-
-// closeModal function defined above with comprehensive logging
-// Removed duplicate to prevent conflicts
+// Note: Modal management functions (openModal, closeModal) are defined earlier
+// Additional specific modal openers use the generic openModal function
 
 // ============= AUTHENTICATION HANDLERS =============
 function handleLogin(e) {
@@ -481,7 +484,7 @@ function handleLogout() {
         clearCurrentSession();
         updateNavigation();
         alert('👋 You have been signed out successfully.');
-        window.location.href = 'ProjectHub.html';
+        window.location.href = 'index.html';
     }
 }
 
@@ -1046,29 +1049,25 @@ function openEditModal(projectId) {
     }
     
     // Populate form with current values
-    document.getElementById('editProjectId').value = project.id;
-    document.getElementById('editTitle').value = project.title;
-    document.getElementById('editDesc').value = project.description;
-    document.getElementById('editCategory').value = project.category;
-    document.getElementById('editTech').value = project.technologies.join(', ');
-    document.getElementById('editGithub').value = project.github || '';
-    document.getElementById('editDemo').value = project.demo || '';
+    document.getElementById('editProjId').value = project.id;
+    document.getElementById('editProjTitle').value = project.title;
+    document.getElementById('editProjDesc').value = project.description;
+    document.getElementById('editProjCategory').value = project.category;
+    document.getElementById('editProjTech').value = project.technologies.join(', ');
+    document.getElementById('editProjGithub').value = project.github || '';
+    document.getElementById('editProjDemo').value = project.demo || '';
     
-    // Load existing image or reset to default
+    // Load existing image
     if (project.image) {
         editImageData = project.image;
-        const previewArea = document.getElementById('editImagePreview');
-        const actionsDiv = document.getElementById('editImageActions');
-        
-        previewArea.innerHTML = `
-            <img src="${project.image}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
-            <div class="image-overlay">
-                <span>✏️ Edit</span>
-            </div>
-        `;
-        actionsDiv.style.display = 'flex';
+        const previewImg = document.getElementById('editPreviewImg');
+        if (previewImg) {
+            previewImg.src = project.image;
+            document.getElementById('editImagePreview').style.display = 'block';
+        }
     } else {
-        resetImagePreview('edit');
+        editImageData = null;
+        document.getElementById('editImagePreview').style.display = 'none';
     }
     
     openModal('editModal');
@@ -1077,7 +1076,7 @@ function openEditModal(projectId) {
 function handleProjectEdit(e) {
     e.preventDefault();
     
-    const projectId = parseInt(document.getElementById('editProjectId').value);
+    const projectId = parseInt(document.getElementById('editProjId').value);
     const project = projectDatabase.find(p => p.id === projectId);
     
     if (!project) {
@@ -1086,10 +1085,10 @@ function handleProjectEdit(e) {
     }
     
     // Validate inputs
-    const title = document.getElementById('editTitle').value.trim();
-    const description = document.getElementById('editDesc').value.trim();
-    const category = document.getElementById('editCategory').value;
-    const techString = document.getElementById('editTech').value.trim();
+    const title = document.getElementById('editProjTitle').value.trim();
+    const description = document.getElementById('editProjDesc').value.trim();
+    const category = document.getElementById('editProjCategory').value;
+    const techString = document.getElementById('editProjTech').value.trim();
     
     // Title validation (minimum 10 characters)
     if (!title || title.length < 10) {
@@ -1117,14 +1116,14 @@ function handleProjectEdit(e) {
     }
     
     // GitHub URL validation (optional but must be valid if provided)
-    const githubUrl = document.getElementById('editGithub').value.trim();
+    const githubUrl = document.getElementById('editProjGithub').value.trim();
     if (githubUrl && !isValidGitHubUrl(githubUrl)) {
         showToast('Please enter a valid GitHub repository URL', 'error');
         return;
     }
     
     // Demo URL validation (optional but must be valid if provided)
-    const demoUrl = document.getElementById('editDemo').value.trim();
+    const demoUrl = document.getElementById('editProjDemo').value.trim();
     if (demoUrl && !isValidUrl(demoUrl)) {
         showToast('Please enter a valid demo URL', 'error');
         return;
@@ -1153,16 +1152,15 @@ function handleProjectEdit(e) {
 }
 
 // ============= DELETE PROJECT =============
-function confirmDeleteProject() {
-    const projectId = parseInt(document.getElementById('editProjectId').value);
+function openDeleteModal(projectId) {
     projectToDelete = projectId;
-    
-    closeModal('editModal');
     openModal('deleteConfirmModal');
-    
-    // Attach delete handler
-    const confirmBtn = document.getElementById('confirmDeleteBtn');
-    confirmBtn.onclick = () => deleteProject(projectId);
+}
+
+function confirmDeleteProject() {
+    if (projectToDelete) {
+        deleteProject(projectToDelete);
+    }
 }
 
 function deleteProject(projectId) {
@@ -1200,6 +1198,13 @@ function deleteProject(projectId) {
 }
 
 // ============= IMAGE MANAGEMENT SYSTEM =============
+
+/**
+ * Handle image upload from file input (alias for handleImageSelect)
+ */
+function handleImageUpload(event, mode) {
+    handleImageSelect(event, mode);
+}
 
 /**
  * Handle image file selection
@@ -1452,7 +1457,7 @@ function loadDashboardData() {
 function loadAccountData() {
     if (!currentUser) {
         alert('Please sign in to edit your profile');
-        window.location.href = 'ProjectHub.html';
+        window.location.href = 'index.html';
         return;
     }
 
@@ -1486,44 +1491,4 @@ function saveProfileChanges(e) {
     saveCurrentSession(currentUser);
     updateNavigation();
     alert('✅ Profile updated successfully!');
-}
-
-// ============= UTILITY FUNCTIONS =============
-function viewProjectDetails(projectId) {
-    const project = projectDatabase.find(p => p.id === projectId);
-    if (!project) return;
-
-    alert(`
-📚 ${project.title}
-👤 by ${project.creator}
-⭐ Rating: ${project.rating}/5 (${project.reviews} reviews)
-👁️ Views: ${project.views}
-
-Technologies: ${project.technologies.join(', ')}
-
-${project.description}
-
-📊 GitHub: ${project.github}
-🔗 Demo: ${project.demo}
-    `);
-}
-
-function toggleBookmark(projectId) {
-    if (!currentUser) {
-        alert('Please sign in to bookmark projects');
-        openLoginModal();
-        return;
-    }
-
-    const project = projectDatabase.find(p => p.id === projectId);
-    if (userBookmarks.includes(projectId)) {
-        userBookmarks = userBookmarks.filter(id => id !== projectId);
-        project.bookmarks--;
-        alert('📌 Removed from bookmarks');
-    } else {
-        userBookmarks.push(projectId);
-        project.bookmarks++;
-        alert('📌 Added to bookmarks');
-    }
-    renderProjectGrid();
 }
