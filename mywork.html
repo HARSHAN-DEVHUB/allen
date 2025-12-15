@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Work - ProjectHub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header>
+        <div class="header-container">
+            <a href="ProjectHub.html" class="logo">📚 ProjectHub</a>
+            <nav>
+                <a href="browse.html">Browse</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="mywork.html" class="active">My Work</a>
+                <a href="account.html">Account</a>
+            </nav>
+            <div class="nav-right" id="navButtons">
+                <button class="btn btn-primary" onclick="openLoginModal()">Sign In</button>
+                <button class="btn btn-secondary" onclick="openRegisterModal()">Join Us</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        <!-- My Projects Page -->
+        <div id="myWorkPage" class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <div>
+                    <div class="section-title">My Projects</div>
+                    <p class="section-subtitle">Manage and showcase your work</p>
+                </div>
+                <button class="btn btn-primary" onclick="openUploadModal()">+ New Project</button>
+            </div>
+
+            <div class="projects-grid" id="userProjectsList">
+                <!-- User projects render here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Project Details Modal -->
+    <div id="projectDetailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle" aria-hidden="true">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 id="detailTitle">Project Details</h2>
+                <button class="close-btn" onclick="closeModal('projectDetailModal')" aria-label="Close project details modal">&times;</button>
+            </div>
+            <div id="projectDetailContent" style="max-height: 70vh; overflow-y: auto;" role="document">
+                <!-- Project details render here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Project Modal -->
+    <div id="editModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="editModalTitle">Edit Your Project</h2>
+                <button class="close-btn" onclick="closeModal('editModal')" aria-label="Close edit modal">&times;</button>
+            </div>
+            <form onsubmit="handleProjectEdit(event)" aria-label="Edit project form">
+                <input type="hidden" id="editProjectId">
+                <div class="form-group">
+                    <label for="editImageFile">Project Image</label>
+                    <div class="image-upload-container" id="editImageContainer">
+                        <input type="file" id="editImageFile" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" style="display: none;" onchange="handleImageSelect(event, 'edit')" aria-label="Upload project image">
+                        <div class="image-preview-area" id="editImagePreview" onclick="document.getElementById('editImageFile').click()" role="button" tabindex="0" aria-label="Click to upload image">
+                            <div class="image-placeholder">
+                                <span style="font-size: 3rem;">🖼️</span>
+                                <p>Click to upload or drag & drop</p>
+                                <small>JPG, PNG, WEBP, GIF (Max 5MB)</small>
+                            </div>
+                        </div>
+                        <div class="image-actions" style="display: none;" id="editImageActions">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('editImageFile').click()">📷 Change Image</button>
+                            <button type="button" class="btn" style="background: #dc2626; color: white;" onclick="removeEditImage()">🗑️ Remove</button>
+                        </div>
+                    </div>
+                    <div class="image-info" id="editImageInfo" style="display: none; margin-top: 0.5rem; font-size: 0.85rem; color: #666;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="editTitle">Project Title <span aria-label="required">*</span></label>
+                    <input type="text" id="editTitle" placeholder="What's your project called?" required aria-required="true" aria-describedby="editTitleHelp" minlength="10">
+                    <small id="editTitleHelp" class="form-help">Minimum 10 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="editDesc">Description <span aria-label="required">*</span></label>
+                    <textarea id="editDesc" placeholder="Tell us about your project..." required aria-required="true" aria-describedby="editDescHelp" minlength="10"></textarea>
+                    <small id="editDescHelp" class="form-help">Minimum 10 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="editCategory">Category <span aria-label="required">*</span></label>
+                    <select id="editCategory" required aria-required="true">
+                        <option value="">Choose a category</option>
+                        <option value="Web">Web Development</option>
+                        <option value="Mobile">Mobile Apps</option>
+                        <option value="AI">AI & Machine Learning</option>
+                        <option value="Data">Data Science</option>
+                        <option value="Game">Game Development</option>
+                        <option value="Desktop">Desktop Applications</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editTech">Technologies Used <span aria-label="required">*</span></label>
+                    <input type="text" id="editTech" placeholder="e.g., React, Node.js, MongoDB" required aria-required="true" aria-describedby="editTechHelp">
+                    <small id="editTechHelp" class="form-help">Separate with commas. At least one required.</small>
+                </div>
+                <div class="form-group">
+                    <label for="editGithub">GitHub Repository URL</label>
+                    <input type="url" id="editGithub" placeholder="https://github.com/username/repo" aria-describedby="editGithubHelp">
+                    <small id="editGithubHelp" class="form-help">Optional. Must be a valid GitHub URL.</small>
+                </div>
+                <div class="form-group">
+                    <label for="editDemo">Live Demo URL (Optional)</label>
+                    <input type="url" id="editDemo" placeholder="https://your-demo.com" aria-describedby="editDemoHelp">
+                    <small id="editDemoHelp" class="form-help">Optional. Link to your live project demo.</small>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="button" onclick="confirmDeleteProject()" class="btn" style="background: #dc2626; color: white; flex: 1;" aria-label="Delete this project">🗑️ Delete</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 2;" aria-label="Update project details">✅ Update Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sign In to ProjectHub</h2>
+                <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Your Account</h2>
+                <button class="close-btn" onclick="closeModal('registerModal')">&times;</button>
+            </div>
+            <form onsubmit="handleRegistration(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Create a strong password" required>
+                </div>
+                <div class="form-group">
+                    <label>Field of Study</label>
+                    <select id="regField" required>
+                        <option value="">Select your field</option>
+                        <option value="CS">Computer Science</option>
+                        <option value="CE">Civil Engineering</option>
+                        <option value="ME">Mechanical Engineering</option>
+                        <option value="EE">Electrical Engineering</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upload/Create Project Modal -->
+    <div id="uploadModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="uploadModalTitle" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="uploadModalTitle">Upload Your Project</h2>
+                <button type="button" class="close-btn" id="closeUploadModal" aria-label="Close modal">&times;</button>
+            </div>
+            <form onsubmit="handleProjectUpload(event)" aria-label="Create new project form">
+                <div class="form-group">
+                    <label for="projImageFile">Project Image <span aria-label="required">*</span></label>
+                    <div class="image-upload-container" id="uploadImageContainer">
+                        <input type="file" id="projImageFile" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" style="display: none;" onchange="handleImageSelect(event, 'upload')" aria-label="Upload project image">
+                        <div class="image-preview-area" id="uploadImagePreview" onclick="document.getElementById('projImageFile').click()" role="button" tabindex="0" aria-label="Click to upload image">
+                            <div class="image-placeholder">
+                                <span style="font-size: 3rem;">🖼️</span>
+                                <p>Click to upload or drag & drop</p>
+                                <small>JPG, PNG, WEBP, GIF (Max 5MB)</small>
+                            </div>
+                        </div>
+                        <div class="image-actions" style="display: none;" id="uploadImageActions">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('projImageFile').click()">📷 Change Image</button>
+                            <button type="button" class="btn" style="background: #dc2626; color: white;" onclick="removeUploadImage()">🗑️ Remove</button>
+                        </div>
+                    </div>
+                    <div class="image-info" id="uploadImageInfo" style="display: none; margin-top: 0.5rem; font-size: 0.85rem; color: #666;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="projTitle">Project Title <span aria-label="required">*</span></label>
+                    <input type="text" id="projTitle" placeholder="What's your project called?" required aria-required="true" aria-describedby="projTitleHelp" minlength="10">
+                    <small id="projTitleHelp" class="form-help">Minimum 10 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="projDesc">Description <span aria-label="required">*</span></label>
+                    <textarea id="projDesc" placeholder="Tell us about your project..." required aria-required="true" aria-describedby="projDescHelp" minlength="10"></textarea>
+                    <small id="projDescHelp" class="form-help">Minimum 10 characters. Be descriptive!</small>
+                </div>
+                <div class="form-group">
+                    <label for="projCategory">Category <span aria-label="required">*</span></label>
+                    <select id="projCategory" required aria-required="true">
+                        <option value="">Choose a category</option>
+                        <option value="Web">Web Development</option>
+                        <option value="Mobile">Mobile Apps</option>
+                        <option value="AI">AI & Machine Learning</option>
+                        <option value="Data">Data Science</option>
+                        <option value="Game">Game Development</option>
+                        <option value="Desktop">Desktop Applications</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="projTech">Technologies Used <span aria-label="required">*</span></label>
+                    <input type="text" id="projTech" placeholder="e.g., React, Node.js, MongoDB" required aria-required="true" aria-describedby="projTechHelp">
+                    <small id="projTechHelp" class="form-help">Separate with commas. At least one required.</small>
+                </div>
+                <div class="form-group">
+                    <label for="projGithub">GitHub Repository URL</label>
+                    <input type="url" id="projGithub" placeholder="https://github.com/username/repo" aria-describedby="projGithubHelp">
+                    <small id="projGithubHelp" class="form-help">Optional. Must be a valid GitHub URL.</small>
+                </div>
+                <div class="form-group">
+                    <label for="projDemo">Live Demo URL (Optional)</label>
+                    <input type="url" id="projDemo" placeholder="https://your-demo.com" aria-describedby="projDemoHelp">
+                    <small id="projDemoHelp" class="form-help">Optional. Link to your live project demo.</small>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;" aria-label="Publish your project">Publish Project</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 10000;"></div>
+
+    <!-- Delete Confirmation Dialog -->
+    <div id="deleteConfirmModal" class="modal" role="alertdialog" aria-modal="true" aria-labelledby="deleteConfirmTitle" aria-describedby="deleteConfirmDesc" aria-hidden="true">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 id="deleteConfirmTitle">Confirm Delete</h2>
+                <button class="close-btn" onclick="closeModal('deleteConfirmModal')" aria-label="Cancel delete">&times;</button>
+            </div>
+            <div style="padding: 1.5rem;">
+                <p id="deleteConfirmDesc" style="margin-bottom: 1.5rem; color: #dc2626;">Are you sure you want to delete this project? This action cannot be undone.</p>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button onclick="closeModal('deleteConfirmModal')" class="btn btn-secondary" aria-label="Cancel and keep project">Cancel</button>
+                    <button id="confirmDeleteBtn" class="btn" style="background: #dc2626; color: white;" aria-label="Confirm delete project">Delete Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- External JavaScript Files -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        /**
+         * Initialize page and set up modal event listeners
+         * This runs when the DOM is fully loaded
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('[Page Init] Initializing My Work page...');
+            
+            // Authentication and page setup
+            checkAuthAndUpdateNav();
+            requireAuth();
+            renderUserProjects();
+            
+            // Set up close button event listener for upload modal
+            const closeUploadBtn = document.getElementById('closeUploadModal');
+            if (closeUploadBtn) {
+                console.log('[Event Listener] Attaching click handler to close button');
+                closeUploadBtn.addEventListener('click', function(e) {
+                    console.log('[Close Button] Clicked - closing upload modal');
+                    e.preventDefault(); // Prevent any default behavior
+                    e.stopPropagation(); // Stop event bubbling
+                    closeModal('uploadModal');
+                });
+                
+                // Also add keyboard support (Enter/Space)
+                closeUploadBtn.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        console.log('[Close Button] Keyboard activated - closing upload modal');
+                        e.preventDefault();
+                        closeModal('uploadModal');
+                    }
+                });
+            } else {
+                console.error('[Event Listener] Close button not found!');
+            }
+            
+            // Add event listener to modal overlay for click-outside-to-close
+            const uploadModal = document.getElementById('uploadModal');
+            if (uploadModal) {
+                uploadModal.addEventListener('click', function(e) {
+                    // Only close if clicking the overlay itself, not the content
+                    if (e.target === uploadModal) {
+                        console.log('[Modal Overlay] Clicked outside - closing modal');
+                        closeModal('uploadModal');
+                    }
+                });
+            }
+            
+            console.log('[Page Init] All event listeners attached successfully');
+        });
+    </script>
+</body>
+</html>

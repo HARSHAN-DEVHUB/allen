@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - ProjectHub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header>
+        <div class="header-container">
+            <a href="ProjectHub.html" class="logo">📚 ProjectHub</a>
+            <nav>
+                <a href="browse.html">Browse</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="mywork.html">My Work</a>
+                <a href="account.html" class="active">Account</a>
+            </nav>
+            <div class="nav-right" id="navButtons">
+                <button class="btn btn-primary" onclick="openLoginModal()">Sign In</button>
+                <button class="btn btn-secondary" onclick="openRegisterModal()">Join Us</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        <!-- Account Settings Page -->
+        <div id="accountPage" class="section">
+            <div class="section-title">Profile Settings</div>
+            <p class="section-subtitle">Manage your profile information</p>
+            
+            <div style="background: white; padding: 2rem; border-radius: var(--border-radius); border: 1px solid var(--color-border); max-width: 600px;">
+                <form onsubmit="saveProfileChanges(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="fullNameField" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="emailField" placeholder="your@email.com" disabled style="opacity: 0.6;">
+                    </div>
+                    <div class="form-group">
+                        <label>About You</label>
+                        <textarea id="bioField" placeholder="Brief bio and interests..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Skills & Technologies</label>
+                        <input type="text" id="skillsField" placeholder="JavaScript, React, Python, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label>Study Field</label>
+                        <input type="text" id="fieldField" placeholder="Computer Science, Electronics, etc.">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sign In to ProjectHub</h2>
+                <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Your Account</h2>
+                <button class="close-btn" onclick="closeModal('registerModal')">&times;</button>
+            </div>
+            <form onsubmit="handleRegistration(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Create a strong password" required>
+                </div>
+                <div class="form-group">
+                    <label>Field of Study</label>
+                    <select id="regField" required>
+                        <option value="">Select your field</option>
+                        <option value="CS">Computer Science</option>
+                        <option value="CE">Civil Engineering</option>
+                        <option value="ME">Mechanical Engineering</option>
+                        <option value="EE">Electrical Engineering</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- External JavaScript Files -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthAndUpdateNav();
+            requireAuth();
+            loadAccountData();
+        });
+    </script>
+</body>
+</html>

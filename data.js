@@ -1,0 +1,72 @@
+// ============= APPLICATION DATA =============
+// Sample projects database
+const projectDatabase = [
+    {
+        id: 1,
+        title: "E-Commerce Platform",
+        category: "Web",
+        description: "Full-stack e-commerce solution with user authentication, product catalog, shopping cart, and payment integration.",
+        technologies: ["React", "Node.js", "MongoDB", "Stripe"],
+        image: "https://images.unsplash.com/photo-1557821552-17105176677c?w=400&h=250&fit=crop",
+        creator: "Aditya Kumar",
+        creatorId: 1,
+        views: 342,
+        rating: 4.6,
+        reviews: 23,
+        bookmarks: 67,
+        github: "https://github.com",
+        demo: "https://demo.com",
+        dateCreated: "2024-10-15"
+    },
+    {
+        id: 2,
+        title: "ML-Based Image Classification",
+        category: "AI",
+        description: "Deep learning model for classifying handwritten digits with 98% accuracy using CNNs. Includes web interface for testing.",
+        technologies: ["Python", "TensorFlow", "Keras", "Flask"],
+        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=250&fit=crop",
+        creator: "Priya Singh",
+        creatorId: 2,
+        views: 256,
+        rating: 4.4,
+        reviews: 18,
+        bookmarks: 45,
+        github: "https://github.com",
+        demo: "https://demo.com",
+        dateCreated: "2024-10-20"
+    },
+    {
+        id: 3,
+        title: "Real Estate Management App",
+        category: "Mobile",
+        description: "Native iOS and Android app for browsing, listing, and managing real estate properties with advanced filters.",
+        technologies: ["React Native", "Firebase", "Google Maps API"],
+        image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=250&fit=crop",
+        creator: "Raj Patel",
+        creatorId: 3,
+        views: 428,
+        rating: 4.8,
+        reviews: 31,
+        bookmarks: 92,
+        github: "https://github.com",
+        demo: "https://demo.com",
+        dateCreated: "2024-09-28"
+    },
+    {
+        id: 4,
+        title: "Data Analytics Dashboard",
+        category: "Data",
+        description: "Interactive visualization platform for analyzing large datasets with real-time updates and custom report generation.",
+        technologies: ["React", "D3.js", "Python", "PostgreSQL"],
+        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop",
+        creator: "Neha Gupta",
+        creatorId: 4,
+        views: 189,
+        rating: 4.5,
+        reviews: 15,
+        bookmarks: 38,
+        github: "https://github.com",
+        demo: "https://demo.com",
+        dateCreated: "2024-11-05"
+    }
+];
